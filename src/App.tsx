@@ -436,12 +436,20 @@ export default function App() {
       const link = document.createElement("a");
       link.setAttribute("href", url);
       link.setAttribute("download", `registration_data_${startDate}_to_${endDate}.csv`);
+      link.style.display = 'none';
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
     } catch (error) {
       console.error("Error exporting CSV:", error);
-      setErrorModal({ show: true, title: 'Error', message: 'ไม่สามารถดาวน์โหลดข้อมูลได้' });
+      setErrorModal({ 
+        show: true, 
+        title: 'Error', 
+        message: 'ไม่สามารถดาวน์โหลดข้อมูลได้' 
+      });
     }
     setLoading(false);
   };
