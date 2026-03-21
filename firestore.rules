@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: registrations
+    // Document ID: QSMI-XXXXX
+    // Fields:
+    //   - id: string (required) - Unique registration ID
+    //   - createdAt: timestamp (required) - Registration timestamp
+    //   - prefix: string (optional) - Name prefix
+    //   - firstName: string (required) - First name
+    //   - lastName: string (required) - Last name
+    //   - gender: string (optional) - Gender
+    //   - citizenId: string (required) - Thai citizen ID
+    //   - phone: string (required) - Phone number
+    //   - dobDay: string (optional) - Day of birth
+    //   - dobMonth: string (optional) - Month of birth
+    //   - dobYearBE: string (optional) - Year of birth (BE)
+    //   - age: number (optional) - Age
+    //   - university: string (optional) - University
+    //   - yearLevel: string (optional) - Year level
+    //   - studentId: string (optional) - Student ID
+    //   - status: string (required) - 'active' or 'deleted'
+    //   - vaccineData: map (optional) - Vaccine info
+    //
+    // ===============================================================
+
+    function isValidRegistration(data) {
+      return data.keys().hasAll(['id', 'createdAt', 'firstName', 'lastName', 'citizenId', 'phone', 'status']) &&
+             data.id is string && data.id.size() <= 20 &&
+             data.firstName is string && data.firstName.size() <= 100 &&
+             data.lastName is string && data.lastName.size() <= 100 &&
+             data.citizenId is string && data.citizenId.size() == 13 &&
+             data.phone is string && data.phone.size() <= 20 &&
+             data.status in ['active', 'deleted'] &&
+             (!('age' in data) || data.age == null || data.age is number);
+    }
+
+    match /registrations/{regId} {
+      // Allow public read/write for the prototype since it uses a local PIN for admin
+      // In a production app, you MUST implement Firebase Auth and restrict access
+      allow read: if true;
+      allow create: if isValidRegistration(request.resource.data);
+      allow update: if isValidRegistration(request.resource.data);
+      allow delete: if true;
+    }
+
+    match /users/{userId} {
+      allow read, write: if false;
+    }
+  }
+}

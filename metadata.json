@@ -1,0 +1,5 @@
+{
+  "name": "Vaccine Registration",
+  "description": "A comprehensive vaccine registration system for QSMI, featuring registration, admin dashboard, and vaccine tracking.",
+  "requestFramePermissions": []
+}

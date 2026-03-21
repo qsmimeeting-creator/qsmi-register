@@ -1,0 +1,45 @@
+{
+  "entities": {
+    "Registration": {
+      "title": "Registration",
+      "description": "Registration data for vaccine injection",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique registration ID (QSMI-XXXXX)" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Registration timestamp" },
+        "prefix": { "type": "string", "description": "Name prefix (Mr., Mrs., Ms., etc.)" },
+        "firstName": { "type": "string", "description": "First name" },
+        "lastName": { "type": "string", "description": "Last name" },
+        "gender": { "type": "string", "description": "Gender" },
+        "citizenId": { "type": "string", "description": "Thai citizen ID" },
+        "phone": { "type": "string", "description": "Phone number" },
+        "dobDay": { "type": "string", "description": "Day of birth" },
+        "dobMonth": { "type": "string", "description": "Month of birth" },
+        "dobYearBE": { "type": "string", "description": "Year of birth (Buddhist Era)" },
+        "age": { "type": "number", "description": "Age" },
+        "university": { "type": "string", "description": "University or organization" },
+        "yearLevel": { "type": "string", "description": "Year level or status" },
+        "studentId": { "type": "string", "description": "Student ID" },
+        "status": { "type": "string", "enum": ["active", "deleted"], "description": "Registration status" },
+        "vaccineData": {
+          "type": "object",
+          "properties": {
+            "serviceDate": { "type": "string", "description": "Date of service" },
+            "hn": { "type": "string", "description": "Hospital Number" },
+            "treatmentType": { "type": "string", "description": "Type of treatment" },
+            "injectionMethod": { "type": "string", "description": "Injection method" },
+            "vaccineName": { "type": "string", "description": "Name of the vaccine" },
+            "note": { "type": "string", "description": "Additional notes" }
+          }
+        }
+      },
+      "required": ["id", "createdAt", "firstName", "lastName", "citizenId", "phone", "status"]
+    }
+  },
+  "firestore": {
+    "registrations": {
+      "schema": "Registration",
+      "description": "Collection of vaccine registrations"
+    }
+  }
+}
