@@ -40,12 +40,13 @@ service cloud.firestore {
     }
 
     match /registrations/{regId} {
-      // Allow public read/write for the prototype since it uses a local PIN for admin
-      // In a production app, you MUST implement Firebase Auth and restrict access
+      // Restore validation for security. 
+      // Note: 'read' is still public to support the citizen ID check and admin dashboard without Firebase Auth.
+      // For true security of personal data, consider implementing Firebase Authentication for admins.
       allow read: if true;
       allow create: if isValidRegistration(request.resource.data);
       allow update: if isValidRegistration(request.resource.data);
-      allow delete: if true;
+      allow delete: if true; // Allow deletion as requested by user
     }
 
     match /users/{userId} {
