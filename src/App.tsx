@@ -291,7 +291,7 @@ export default function App() {
     e.preventDefault();
     
     if (!formData.firstName || !formData.lastName || !formData.phone || !formData.dobYearBE || !formData.university || !formData.yearLevel || !formData.gender) {
-      setErrorModal({ show: true, title: 'แจ้งเตือน', message: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน (รวมถึงเพศ)' });
+      setErrorModal({ show: true, title: 'แจ้งเตือน', message: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน' });
       return;
     }
 
