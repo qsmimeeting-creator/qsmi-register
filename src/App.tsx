@@ -1071,118 +1071,119 @@ export default function App() {
                     <X className="w-6 h-6" />
                   </button>
                 </div>
-                <form onSubmit={saveEditing} className="flex-1 overflow-y-auto p-5 md:p-10 space-y-8">
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
-                      <div className="w-8 h-8 bg-[#C8102E]/10 rounded-lg flex items-center justify-center">
-                        <User className="w-4 h-4 text-[#C8102E]" />
-                      </div>
-                      <h3 className="text-gray-900 font-bold text-base uppercase tracking-wider">ข้อมูลส่วนตัว</h3>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="block text-sm font-bold text-gray-700">คำนำหน้า</label>
-                        <select 
-                          className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" 
-                          value={editFormData.prefix} 
-                          onChange={e => {
-                            const newPrefix = e.target.value;
-                            let newGender = editFormData.gender;
-                            if (['นาย', 'ด.ช.'].includes(newPrefix)) newGender = 'ชาย';
-                            else if (['นาง', 'นางสาว', 'ด.ญ.'].includes(newPrefix)) newGender = 'หญิง';
-                            else if (newPrefix === 'อื่นๆ') newGender = '';
-                            setEditFormData({...editFormData, prefix: newPrefix, gender: newGender});
-                          }}
-                        >
-                          {NAME_PREFIXES.map(p => <option key={p} value={p}>{p}</option>)}
-                        </select>
-                      </div>
-                      {editFormData.prefix === 'อื่นๆ' && (
-                        <div className="md:col-span-2 flex flex-col gap-1.5">
-                          <label className="block text-sm font-bold text-gray-700">ระบุคำนำหน้า</label>
-                          <input 
-                            type="text" 
-                            className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E]" 
-                            value={editFormData.otherPrefix} 
-                            onChange={e => setEditFormData({...editFormData, otherPrefix: e.target.value})} 
-                          />
+                <form onSubmit={saveEditing} className="flex-1 flex flex-col overflow-hidden">
+                  <div className="flex-1 overflow-y-auto p-5 md:p-10 space-y-8">
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
+                        <div className="w-8 h-8 bg-[#C8102E]/10 rounded-lg flex items-center justify-center">
+                          <User className="w-4 h-4 text-[#C8102E]" />
                         </div>
-                      )}
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="block text-sm font-bold text-gray-700">ชื่อ</label>
-                        <input type="text" className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E]" value={editFormData.firstName} onChange={e => setEditFormData({...editFormData, firstName: e.target.value})} />
+                        <h3 className="text-gray-900 font-bold text-base uppercase tracking-wider">ข้อมูลส่วนตัว</h3>
                       </div>
-                      <div className="flex flex-col gap-1.5">
-                        <label className="block text-sm font-bold text-gray-700">นามสกุล</label>
-                        <input type="text" className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E]" value={editFormData.lastName} onChange={e => setEditFormData({...editFormData, lastName: e.target.value})} />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="block text-sm font-bold text-gray-700">เพศ</label>
-                        <select 
-                          className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" 
-                          value={editFormData.gender} 
-                          onChange={e => setEditFormData({...editFormData, gender: e.target.value})}
-                        >
-                          <option value="" disabled>กรุณาเลือก</option>
-                          <option value="ชาย">ชาย</option>
-                          <option value="หญิง">หญิง</option>
-                        </select>
-                      </div>
-                      <div className="flex flex-col gap-1.5">
-                        <label className="block text-sm font-bold text-gray-700">เบอร์โทรศัพท์</label>
-                        <input type="tel" className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E]" value={editFormData.phone} maxLength={10} onChange={e => setEditFormData({...editFormData, phone: e.target.value.replace(/\D/g,'')})} />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-                      <div className="md:col-span-3 space-y-1.5">
-                        <label className="block text-sm font-bold text-gray-700">วัน/เดือน/ปี พ.ศ. เกิด</label>
-                        <div className="grid grid-cols-3 gap-3">
-                          <select className="border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" value={editFormData.dobDay} onChange={e => setEditFormData({...editFormData, dobDay: e.target.value})}>{Array.from({length: 31}, (_, i) => i + 1).map(d => <option key={d} value={d}>{d}</option>)}</select>
-                          <select className="border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" value={editFormData.dobMonth} onChange={e => setEditFormData({...editFormData, dobMonth: e.target.value})}>{MONTHS_TH.map((m, i) => <option key={m} value={i+1}>{m}</option>)}</select>
-                          <input type="tel" className="border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E]" placeholder="พ.ศ." value={editFormData.dobYearBE} maxLength={4} onChange={e => setEditFormData({...editFormData, dobYearBE: e.target.value})} />
-                        </div>
-                      </div>
-                      <div className="md:col-span-1 flex flex-col gap-1.5">
-                        <label className="block text-sm font-bold text-gray-700 text-center">อายุ</label>
-                        <div className="w-full bg-gray-50 border border-gray-100 rounded-xl p-3 text-base text-center font-black text-[#C8102E]">{editFormData.age ? `${editFormData.age} ปี` : '-'}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
-                      <div className="w-8 h-8 bg-[#C8102E]/10 rounded-lg flex items-center justify-center">
-                        <School className="w-4 h-4 text-[#C8102E]" />
-                      </div>
-                      <h3 className="text-gray-900 font-bold text-base uppercase tracking-wider">ข้อมูลการศึกษา/อาชีพ</h3>
-                    </div>
-                    <div className="flex flex-col gap-1.5">
-                      <label className="block text-sm font-bold text-gray-700">มหาวิทยาลัย/หน่วยงาน</label>
-                      <select className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" value={editFormData.university} onChange={e => setEditFormData({...editFormData, university: e.target.value})}>
-                        {UNIVERSITIES.map(u => <option key={u} value={u}>{u}</option>)}
-                      </select>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="block text-sm font-bold text-gray-700">ชั้นปี/สถานะ</label>
-                        <select className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" value={editFormData.yearLevel} onChange={e => setEditFormData({...editFormData, yearLevel: e.target.value})}>
-                          {YEAR_LEVELS.map(y => <option key={y} value={y}>{y}</option>)}
-                        </select>
-                      </div>
-                      {!['อาจารย์/เจ้าหน้าที่', 'บุคคลทั่วไป'].includes(editFormData.yearLevel || '') && (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                         <div className="flex flex-col gap-1.5">
-                          <label className="block text-sm font-bold text-gray-700">รหัสนักศึกษา</label>
-                          <input type="tel" maxLength={15} className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E]" value={editFormData.studentId} onChange={e => setEditFormData({...editFormData, studentId: e.target.value.replace(/\D/g, '')})} />
+                          <label className="block text-sm font-bold text-gray-700">คำนำหน้า</label>
+                          <select 
+                            className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" 
+                            value={editFormData.prefix} 
+                            onChange={e => {
+                              const newPrefix = e.target.value;
+                              let newGender = editFormData.gender;
+                              if (['นาย', 'ด.ช.'].includes(newPrefix)) newGender = 'ชาย';
+                              else if (['นาง', 'นางสาว', 'ด.ญ.'].includes(newPrefix)) newGender = 'หญิง';
+                              else if (newPrefix === 'อื่นๆ') newGender = '';
+                              setEditFormData({...editFormData, prefix: newPrefix, gender: newGender});
+                            }}
+                          >
+                            {NAME_PREFIXES.map(p => <option key={p} value={p}>{p}</option>)}
+                          </select>
                         </div>
-                      )}
+                        {editFormData.prefix === 'อื่นๆ' && (
+                          <div className="md:col-span-2 flex flex-col gap-1.5">
+                            <label className="block text-sm font-bold text-gray-700">ระบุคำนำหน้า</label>
+                            <input 
+                              type="text" 
+                              className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E]" 
+                              value={editFormData.otherPrefix} 
+                              onChange={e => setEditFormData({...editFormData, otherPrefix: e.target.value})} 
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="block text-sm font-bold text-gray-700">ชื่อ</label>
+                          <input type="text" className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E]" value={editFormData.firstName} onChange={e => setEditFormData({...editFormData, firstName: e.target.value})} />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="block text-sm font-bold text-gray-700">นามสกุล</label>
+                          <input type="text" className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E]" value={editFormData.lastName} onChange={e => setEditFormData({...editFormData, lastName: e.target.value})} />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="block text-sm font-bold text-gray-700">เพศ</label>
+                          <select 
+                            className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" 
+                            value={editFormData.gender} 
+                            onChange={e => setEditFormData({...editFormData, gender: e.target.value})}
+                          >
+                            <option value="" disabled>กรุณาเลือก</option>
+                            <option value="ชาย">ชาย</option>
+                            <option value="หญิง">หญิง</option>
+                          </select>
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="block text-sm font-bold text-gray-700">เบอร์โทรศัพท์</label>
+                          <input type="tel" className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E]" value={editFormData.phone} maxLength={10} onChange={e => setEditFormData({...editFormData, phone: e.target.value.replace(/\D/g,'')})} />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+                        <div className="md:col-span-3 space-y-1.5">
+                          <label className="block text-sm font-bold text-gray-700">วัน/เดือน/ปี พ.ศ. เกิด</label>
+                          <div className="grid grid-cols-3 gap-3">
+                            <select className="border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" value={editFormData.dobDay} onChange={e => setEditFormData({...editFormData, dobDay: e.target.value})}>{Array.from({length: 31}, (_, i) => i + 1).map(d => <option key={d} value={d}>{d}</option>)}</select>
+                            <select className="border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" value={editFormData.dobMonth} onChange={e => setEditFormData({...editFormData, dobMonth: e.target.value})}>{MONTHS_TH.map((m, i) => <option key={m} value={i+1}>{m}</option>)}</select>
+                            <input type="tel" className="border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E]" placeholder="พ.ศ." value={editFormData.dobYearBE} maxLength={4} onChange={e => setEditFormData({...editFormData, dobYearBE: e.target.value})} />
+                          </div>
+                        </div>
+                        <div className="md:col-span-1 flex flex-col gap-1.5">
+                          <label className="block text-sm font-bold text-gray-700 text-center">อายุ</label>
+                          <div className="w-full bg-gray-50 border border-gray-100 rounded-xl p-3 text-base text-center font-black text-[#C8102E]">{editFormData.age ? `${editFormData.age} ปี` : '-'}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
+                        <div className="w-8 h-8 bg-[#C8102E]/10 rounded-lg flex items-center justify-center">
+                          <School className="w-4 h-4 text-[#C8102E]" />
+                        </div>
+                        <h3 className="text-gray-900 font-bold text-base uppercase tracking-wider">ข้อมูลการศึกษา/อาชีพ</h3>
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="block text-sm font-bold text-gray-700">มหาวิทยาลัย/หน่วยงาน</label>
+                        <select className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" value={editFormData.university} onChange={e => setEditFormData({...editFormData, university: e.target.value})}>
+                          {UNIVERSITIES.map(u => <option key={u} value={u}>{u}</option>)}
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="block text-sm font-bold text-gray-700">ชั้นปี/สถานะ</label>
+                          <select className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" value={editFormData.yearLevel} onChange={e => setEditFormData({...editFormData, yearLevel: e.target.value})}>
+                            {YEAR_LEVELS.map(y => <option key={y} value={y}>{y}</option>)}
+                          </select>
+                        </div>
+                        {!['อาจารย์/เจ้าหน้าที่', 'บุคคลทั่วไป'].includes(editFormData.yearLevel || '') && (
+                          <div className="flex flex-col gap-1.5">
+                            <label className="block text-sm font-bold text-gray-700">รหัสนักศึกษา</label>
+                            <input type="tel" maxLength={15} className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E]" value={editFormData.studentId} onChange={e => setEditFormData({...editFormData, studentId: e.target.value.replace(/\D/g, '')})} />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-
-                  <div className="p-5 md:p-8 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row gap-3 shrink-0 rounded-b-[2.5rem] -mx-5 md:-mx-10 -mb-5 md:-mb-10">
+                  <div className="p-5 md:p-8 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row gap-3 shrink-0">
                     <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 py-4 border border-gray-200 rounded-2xl font-bold text-gray-600 hover:bg-white transition-colors">ยกเลิก</button>
                     <button type="submit" disabled={loading} className="flex-1 py-4 bg-[#198754] text-white rounded-2xl font-bold hover:bg-[#146c43] transition-colors shadow-lg shadow-green-600/20 disabled:opacity-50">บันทึกข้อมูล</button>
                   </div>
@@ -1204,7 +1205,7 @@ export default function App() {
               <motion.div 
                 initial={{ scale: 0.95, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
-                className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col"
+                className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
               >
                 <div className="bg-[#212529] p-5 md:p-8 text-white flex justify-between items-center shrink-0">
                   <div className="flex items-center gap-3">
@@ -1217,95 +1218,97 @@ export default function App() {
                     <X className="w-6 h-6" />
                   </button>
                 </div>
-                <form onSubmit={saveVaccineData} className="flex-1 overflow-y-auto p-5 md:p-10 space-y-8">
-                  <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 flex flex-col gap-2">
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">ผู้รับบริการ</label>
-                    <p className="font-black text-xl md:text-2xl text-gray-900 leading-tight">{vaccineFormData.name}</p>
-                  </div>
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="block text-sm font-bold text-gray-700">วันที่มารับบริการ</label>
-                        <input 
-                          type="date" 
-                          required 
-                          max={new Date().toISOString().split('T')[0]} 
-                          className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
-                          value={vaccineFormData.serviceDate} 
-                          onChange={e => setVaccineFormData({...vaccineFormData, serviceDate: e.target.value})} 
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1.5">
-                        <label className="block text-sm font-bold text-gray-700">HN.</label>
-                        <input 
-                          type="tel" 
-                          className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
-                          placeholder="ระบุ HN (7-10 หลัก)" 
-                          minLength={7} 
-                          maxLength={10} 
-                          value={vaccineFormData.hn} 
-                          onChange={e => setVaccineFormData({...vaccineFormData, hn: e.target.value.replace(/\D/g, '')})} 
-                        />
-                      </div>
+                <form onSubmit={saveVaccineData} className="flex-1 flex flex-col overflow-hidden">
+                  <div className="flex-1 overflow-y-auto p-5 md:p-10 space-y-8">
+                    <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 flex flex-col gap-2">
+                      <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">ผู้รับบริการ</label>
+                      <p className="font-black text-xl md:text-2xl text-gray-900 leading-tight">{vaccineFormData.name}</p>
                     </div>
-                    <div className="flex flex-col gap-1.5">
-                      <label className="block text-sm font-bold text-gray-700">การรักษา (Treatment) <span className="text-red-500">*</span></label>
-                      <select 
-                        required 
-                        className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
-                        value={vaccineFormData.treatmentType} 
-                        onChange={e => setVaccineFormData({...vaccineFormData, treatmentType: e.target.value})}
-                      >
-                        <option value="" disabled>กรุณาเลือก</option>
-                        {TREATMENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                      </select>
-                    </div>
-                    {vaccineFormData.treatmentType && vaccineFormData.treatmentType !== 'Advice' && (
-                      <div className="space-y-5">
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div className="flex flex-col gap-1.5">
-                          <label className="block text-sm font-bold text-gray-700">การฉีด (Injection)</label>
-                          <select 
-                            className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
-                            value={vaccineFormData.injectionMethod} 
-                            onChange={e => setVaccineFormData({...vaccineFormData, injectionMethod: e.target.value})}
-                          >
-                            {INJECTION_OPTIONS[vaccineFormData.treatmentType]?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                          </select>
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                          <label className="block text-sm font-bold text-gray-700">ชื่อวัคซีน</label>
-                          <select 
-                            className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
-                            value={vaccineFormData.vaccineName} 
-                            onChange={e => setVaccineFormData({...vaccineFormData, vaccineName: e.target.value})}
-                          >
-                            <option value="" disabled>กรุณาเลือก</option>
-                            {VACCINE_NAMES.map(v => <option key={v} value={v}>{v}</option>)}
-                          </select>
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                          <label className="block text-sm font-bold text-gray-700">Lot. number</label>
+                          <label className="block text-sm font-bold text-gray-700">วันที่มารับบริการ</label>
                           <input 
-                            type="text"
+                            type="date" 
+                            required 
+                            max={new Date().toISOString().split('T')[0]} 
                             className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
-                            placeholder="ระบุ Lot number"
-                            value={vaccineFormData.lotNumber} 
-                            onChange={e => setVaccineFormData({...vaccineFormData, lotNumber: e.target.value})}
+                            value={vaccineFormData.serviceDate} 
+                            onChange={e => setVaccineFormData({...vaccineFormData, serviceDate: e.target.value})} 
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="block text-sm font-bold text-gray-700">HN.</label>
+                          <input 
+                            type="tel" 
+                            className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
+                            placeholder="ระบุ HN (7-10 หลัก)" 
+                            minLength={7} 
+                            maxLength={10} 
+                            value={vaccineFormData.hn} 
+                            onChange={e => setVaccineFormData({...vaccineFormData, hn: e.target.value.replace(/\D/g, '')})} 
                           />
                         </div>
                       </div>
-                    )}
-                    <div className="flex flex-col gap-1.5">
-                      <label className="block text-sm font-bold text-gray-700">หมายเหตุ (Note)</label>
-                      <textarea 
-                        className="w-full border border-gray-200 rounded-xl p-3 h-24 resize-none outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
-                        placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)" 
-                        value={vaccineFormData.note} 
-                        onChange={e => setVaccineFormData({...vaccineFormData, note: e.target.value})} 
-                      />
+                      <div className="flex flex-col gap-1.5">
+                        <label className="block text-sm font-bold text-gray-700">การรักษา (Treatment) <span className="text-red-500">*</span></label>
+                        <select 
+                          required 
+                          className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
+                          value={vaccineFormData.treatmentType} 
+                          onChange={e => setVaccineFormData({...vaccineFormData, treatmentType: e.target.value})}
+                        >
+                          <option value="" disabled>กรุณาเลือก</option>
+                          {TREATMENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                      </div>
+                      {vaccineFormData.treatmentType && vaccineFormData.treatmentType !== 'Advice' && (
+                        <div className="space-y-5">
+                          <div className="flex flex-col gap-1.5">
+                            <label className="block text-sm font-bold text-gray-700">การฉีด (Injection)</label>
+                            <select 
+                              className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
+                              value={vaccineFormData.injectionMethod} 
+                              onChange={e => setVaccineFormData({...vaccineFormData, injectionMethod: e.target.value})}
+                            >
+                              {INJECTION_OPTIONS[vaccineFormData.treatmentType]?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                            </select>
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <label className="block text-sm font-bold text-gray-700">ชื่อวัคซีน</label>
+                            <select 
+                              className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
+                              value={vaccineFormData.vaccineName} 
+                              onChange={e => setVaccineFormData({...vaccineFormData, vaccineName: e.target.value})}
+                            >
+                              <option value="" disabled>กรุณาเลือก</option>
+                              {VACCINE_NAMES.map(v => <option key={v} value={v}>{v}</option>)}
+                            </select>
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <label className="block text-sm font-bold text-gray-700">Lot. number</label>
+                            <input 
+                              type="text"
+                              className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
+                              placeholder="ระบุ Lot number"
+                              value={vaccineFormData.lotNumber} 
+                              onChange={e => setVaccineFormData({...vaccineFormData, lotNumber: e.target.value})}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="block text-sm font-bold text-gray-700">หมายเหตุ (Note)</label>
+                        <textarea 
+                          className="w-full border border-gray-200 rounded-xl p-3 h-24 resize-none outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
+                          placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)" 
+                          value={vaccineFormData.note} 
+                          onChange={e => setVaccineFormData({...vaccineFormData, note: e.target.value})} 
+                        />
+                      </div>
                     </div>
                   </div>
-                  <div className="p-5 md:p-8 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row gap-3 shrink-0 rounded-b-[2.5rem] -mx-5 md:-mx-10 -mb-5 md:-mb-10">
+                  <div className="p-5 md:p-8 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row gap-3 shrink-0">
                     <button type="button" onClick={() => setShowVaccineModal(false)} className="flex-1 py-4 border border-gray-200 rounded-2xl font-bold text-gray-600 hover:bg-white transition-colors">ยกเลิก</button>
                     <button type="submit" disabled={loading} className="flex-1 py-4 bg-[#198754] text-white rounded-2xl font-bold hover:bg-[#146c43] transition-colors shadow-lg shadow-green-600/20 disabled:opacity-50">บันทึกข้อมูล</button>
                   </div>
