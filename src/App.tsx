@@ -28,6 +28,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Registration, VaccineData } from './types';
 import { firebaseService } from './services/firebaseService';
+import Select, { StylesConfig } from 'react-select';
 
 // --- Constants ---
 const MONTHS_TH = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
@@ -35,6 +36,9 @@ const UNIVERSITIES = ['จุฬาลงกรณ์มหาวิทยาล
 const YEAR_LEVELS = ['ปี 1', 'ปี 2', 'ปี 3', 'ปี 4', 'ปี 5', 'ปี 6', 'อาจารย์/เจ้าหน้าที่', 'บุคคลทั่วไป'];
 const NAME_PREFIXES = ['นาย', 'นาง', 'นางสาว', 'อื่นๆ'];
 const VACCINE_NAMES = ['SPEEDA', 'PVRV', 'PCEC'];
+const DAY_OPTIONS = Array.from({length: 31}, (_, i) => ({ value: (i + 1).toString(), label: (i + 1).toString() }));
+const MONTH_OPTIONS = MONTHS_TH.map((m, i) => ({ value: (i + 1).toString(), label: m }));
+
 const TREATMENT_TYPES = ['Pre-exposure', 'Post-exposure', 'Booster', 'Advice'];
 const INJECTION_OPTIONS: Record<string, string[]> = {
   'Pre-exposure': ['IM x 2 ครั้ง (D0-7)', 'IM x 3 ครั้ง (D0-7-21/28)', 'ID 1 จุด x 3 ครั้ง (D0-7-21/28)', 'ID 2 จุด x 2 ครั้ง (D0-7)'],
@@ -82,6 +86,47 @@ const formatThaiPhoneNumber = (phoneNumber: string) => {
   return formatted;
 };
 
+const pickerStyles: StylesConfig<any, false> = {
+  control: (base, state) => ({
+    ...base,
+    borderRadius: '0.75rem',
+    minHeight: '54px',
+    borderWidth: '1px',
+    borderColor: state.isFocused ? '#C8102E' : '#e5e7eb',
+    boxShadow: state.isFocused ? '0 0 0 2px rgba(200, 16, 46, 0.2)' : 'none',
+    '&:hover': {
+      borderColor: state.isFocused ? '#C8102E' : '#e5e7eb',
+    },
+    transition: 'all 0.2s',
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: '#9ca3af',
+    fontSize: '1rem',
+  }),
+  singleValue: (base) => ({
+    ...base,
+    fontSize: '1rem',
+    color: '#111827',
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected ? '#C8102E' : state.isFocused ? '#fef2f2' : 'white',
+    color: state.isSelected ? 'white' : '#111827',
+    '&:active': {
+      backgroundColor: '#C8102E',
+      color: 'white',
+    },
+    cursor: 'pointer',
+  }),
+  menu: (base) => ({
+    ...base,
+    borderRadius: '0.75rem',
+    overflow: 'hidden',
+    zIndex: 9999,
+  }),
+};
+
 export default function App() {
   const [view, setView] = useState<'check-id' | 'register-form' | 'success' | 'admin-login' | 'admin-dashboard'>('check-id');
   const [bookings, setBookings] = useState<Registration[]>([]);
@@ -91,7 +136,7 @@ export default function App() {
   const [checkIdInput, setCheckIdInput] = useState('');
   const [formData, setFormData] = useState<Omit<Registration, 'id' | 'createdAt' | 'status'>>({ 
     prefix: 'นาย', otherPrefix: '', firstName: '', lastName: '', gender: 'ชาย',
-    dobDay: '1', dobMonth: '1', dobYearBE: '', age: 0, phone: '',
+    dobDay: '', dobMonth: '', dobYearBE: '', age: 0, phone: '',
     university: '', yearLevel: '', studentId: '' , citizenId: ''
   });
 
@@ -187,7 +232,7 @@ export default function App() {
     setCheckIdInput('');
     setFormData({ 
       prefix: 'นาย', otherPrefix: '', firstName: '', lastName: '', gender: 'ชาย',
-      dobDay: '1', dobMonth: '1', dobYearBE: '', age: 0, phone: '',
+      dobDay: '', dobMonth: '', dobYearBE: '', age: 0, phone: '',
       university: '', yearLevel: '', studentId: '', citizenId: ''
     });
     setCurrentBooking(null);
@@ -290,7 +335,7 @@ export default function App() {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.firstName || !formData.lastName || !formData.phone || !formData.dobYearBE || !formData.university || !formData.yearLevel || !formData.gender) {
+    if (!formData.firstName || !formData.lastName || !formData.phone || !formData.dobYearBE || !formData.dobDay || !formData.dobMonth || !formData.university || !formData.yearLevel || !formData.gender) {
       setErrorModal({ show: true, title: 'แจ้งเตือน', message: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน' });
       return;
     }
@@ -638,17 +683,28 @@ export default function App() {
                 <div className="md:col-span-3">
                   <label className="block text-sm font-bold text-gray-700 mb-1.5">วัน/เดือน/ปี พ.ศ. เกิด <span className="text-[#C8102E]">*</span></label>
                   <div className="grid grid-cols-3 gap-3">
-                    <select className="bg-white border border-gray-200 rounded-xl p-3.5 text-base outline-none focus:ring-2 focus:ring-[#C8102E] transition-all" value={formData.dobDay} onChange={e => setFormData({...formData, dobDay: e.target.value})}>
-                      {Array.from({length: 31}, (_, i) => i + 1).map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
-                    <select className="bg-white border border-gray-200 rounded-xl p-3.5 text-base outline-none focus:ring-2 focus:ring-[#C8102E] transition-all" value={formData.dobMonth} onChange={e => setFormData({...formData, dobMonth: e.target.value})}>
-                      {MONTHS_TH.map((m, i) => <option key={m} value={i+1}>{m}</option>)}
-                    </select>
+                    <Select
+                      placeholder="วัน"
+                      options={DAY_OPTIONS}
+                      styles={pickerStyles}
+                      value={DAY_OPTIONS.find(o => o.value === formData.dobDay)}
+                      onChange={(val) => setFormData({...formData, dobDay: val?.value || ''})}
+                      className="text-base"
+                    />
+                    <Select
+                      placeholder="เดือน"
+                      options={MONTH_OPTIONS}
+                      styles={pickerStyles}
+                      value={MONTH_OPTIONS.find(o => o.value === formData.dobMonth)}
+                      onChange={(val) => setFormData({...formData, dobMonth: val?.value || ''})}
+                      className="text-base"
+                    />
                     <input 
+                      required
                       type="tel" 
                       placeholder="พ.ศ." 
                       maxLength={4} 
-                      className="bg-white border border-gray-200 rounded-xl p-3.5 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all" 
+                      className="bg-white border border-gray-200 rounded-xl p-3.5 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all h-[54px]" 
                       value={formData.dobYearBE} 
                       onChange={e => setFormData({...formData, dobYearBE: e.target.value})} 
                     />
@@ -1142,9 +1198,29 @@ export default function App() {
                         <div className="md:col-span-3 space-y-1.5">
                           <label className="block text-sm font-bold text-gray-700">วัน/เดือน/ปี พ.ศ. เกิด</label>
                           <div className="grid grid-cols-3 gap-3">
-                            <select className="border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" value={editFormData.dobDay} onChange={e => setEditFormData({...editFormData, dobDay: e.target.value})}>{Array.from({length: 31}, (_, i) => i + 1).map(d => <option key={d} value={d}>{d}</option>)}</select>
-                            <select className="border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] bg-white" value={editFormData.dobMonth} onChange={e => setEditFormData({...editFormData, dobMonth: e.target.value})}>{MONTHS_TH.map((m, i) => <option key={m} value={i+1}>{m}</option>)}</select>
-                            <input type="tel" className="border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E]" placeholder="พ.ศ." value={editFormData.dobYearBE} maxLength={4} onChange={e => setEditFormData({...editFormData, dobYearBE: e.target.value})} />
+                            <Select
+                              placeholder="วัน"
+                              options={DAY_OPTIONS}
+                              styles={{...pickerStyles, control: (b, s) => ({...pickerStyles.control?.(b, s), minHeight: '48px', padding: 0})}}
+                              value={DAY_OPTIONS.find(o => o.value === editFormData.dobDay)}
+                              onChange={(val) => setEditFormData({...editFormData, dobDay: val?.value || ''})}
+                            />
+                            <Select
+                              placeholder="เดือน"
+                              options={MONTH_OPTIONS}
+                              styles={{...pickerStyles, control: (b, s) => ({...pickerStyles.control?.(b, s), minHeight: '48px', padding: 0})}}
+                              value={MONTH_OPTIONS.find(o => o.value === editFormData.dobMonth)}
+                              onChange={(val) => setEditFormData({...editFormData, dobMonth: val?.value || ''})}
+                            />
+                            <input 
+                              required
+                              type="tel" 
+                              className="border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] h-[48px]" 
+                              placeholder="พ.ศ." 
+                              value={editFormData.dobYearBE} 
+                              maxLength={4} 
+                              onChange={e => setEditFormData({...editFormData, dobYearBE: e.target.value})} 
+                            />
                           </div>
                         </div>
                         <div className="md:col-span-1 flex flex-col gap-1.5">
