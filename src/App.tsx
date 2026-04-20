@@ -111,10 +111,10 @@ export default function App() {
   const [showVaccineModal, setShowVaccineModal] = useState(false);
   const [vaccineFormData, setVaccineFormData] = useState<{
     id: string | null; name: string; serviceDate: string; hn: string; 
-    vaccineName: string; treatmentType: string; injectionMethod: string; note: string;
+    vaccineName: string; lotNumber: string; treatmentType: string; injectionMethod: string; note: string;
   }>({
     id: null, name: '', serviceDate: '', hn: '', 
-    vaccineName: '', treatmentType: '', injectionMethod: '', note: ''
+    vaccineName: '', lotNumber: '', treatmentType: '', injectionMethod: '', note: ''
   });
   const [errorModal, setErrorModal] = useState({ show: false, message: '', title: 'แจ้งเตือน' });
 
@@ -389,6 +389,7 @@ export default function App() {
       serviceDate: vaccineFormData.serviceDate,
       hn: vaccineFormData.hn,
       vaccineName: isAdvice ? '-' : vaccineFormData.vaccineName,
+      lotNumber: isAdvice ? '-' : vaccineFormData.lotNumber,
       treatmentType: vaccineFormData.treatmentType,
       injectionMethod: isAdvice ? '-' : vaccineFormData.injectionMethod,
       note: vaccineFormData.note
@@ -421,13 +422,13 @@ export default function App() {
         return;
       }
 
-      const headers = "ID,วันที่ลงทะเบียน,คำนำหน้า,ชื่อ,นามสกุล,เพศ,เลขบัตรประชาชน,เบอร์โทรศัพท์,วัน/เดือน/ปี ค.ศ. เกิด,อายุ,มหาวิทยาลัย/หน่วยงาน,ชั้นปี/สถานะ,รหัสนักศึกษา,วันที่มารับบริการ,HN.,การรักษา,การฉีด,ชื่อวัคซีน,หมายเหตุ\n";
+      const headers = "ID,วันที่ลงทะเบียน,คำนำหน้า,ชื่อ,นามสกุล,เพศ,เลขบัตรประชาชน,เบอร์โทรศัพท์,วัน/เดือน/ปี ค.ศ. เกิด,อายุ,มหาวิทยาลัย/หน่วยงาน,ชั้นปี/สถานะ,รหัสนักศึกษา,วันที่มารับบริการ,HN.,การรักษา,การฉีด,ชื่อวัคซีน,Lot. Number,หมายเหตุ\n";
       const rows = dataToExport.map(b => {
         const prefix = b.prefix === 'อื่นๆ' ? b.otherPrefix : b.prefix;
         const dobStr = `${b.dobDay}/${b.dobMonth}/${parseInt(b.dobYearBE)-543}`;
         const createdAt = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
         const tsString = createdAt.toLocaleString('th-TH');
-        return `"${b.id}","${tsString}","${prefix}","${b.firstName}","${b.lastName}","${b.gender}","${b.citizenId}","'${b.phone}","${dobStr}","${b.age}","${b.university}","${b.yearLevel}","${b.studentId || '-'}","${b.vaccineData?.serviceDate || '-'}","${b.vaccineData?.hn || '-'}","${b.vaccineData?.treatmentType || '-'}","${b.vaccineData?.injectionMethod || '-'}","${b.vaccineData?.vaccineName || '-'}","${b.vaccineData?.note || '-'}"`;
+        return `"${b.id}","${tsString}","${prefix}","${b.firstName}","${b.lastName}","${b.gender}","${b.citizenId}","'${b.phone}","${dobStr}","${b.age}","${b.university}","${b.yearLevel}","${b.studentId || '-'}","${b.vaccineData?.serviceDate || '-'}","${b.vaccineData?.hn || '-'}","${b.vaccineData?.treatmentType || '-'}","${b.vaccineData?.injectionMethod || '-'}","${b.vaccineData?.vaccineName || '-'}","${b.vaccineData?.lotNumber || '-'}","${b.vaccineData?.note || '-'}"`;
       }).join("\n");
       
       const csvContent = "\uFEFF" + headers + rows;
@@ -972,6 +973,7 @@ export default function App() {
                           {b.vaccineData ? (
                             <div className="text-xs space-y-1">
                               <div className="font-bold text-[#198754]">{b.vaccineData.vaccineName}</div>
+                              {b.vaccineData.lotNumber && <div className="text-gray-600 font-medium">Lot: {b.vaccineData.lotNumber}</div>}
                               <div>{b.vaccineData.treatmentType}</div>
                               <div className="text-gray-500">{b.vaccineData.injectionMethod}</div>
                               <div className="text-gray-400">{formatDateShort(b.vaccineData.serviceDate)}</div>
@@ -990,6 +992,7 @@ export default function App() {
                                   serviceDate: b.vaccineData?.serviceDate || new Date().toISOString().split('T')[0],
                                   hn: b.vaccineData?.hn || '',
                                   vaccineName: b.vaccineData?.vaccineName || '',
+                                  lotNumber: b.vaccineData?.lotNumber || '',
                                   treatmentType: b.vaccineData?.treatmentType || '',
                                   injectionMethod: b.vaccineData?.injectionMethod || '',
                                   note: b.vaccineData?.note || ''
@@ -1279,6 +1282,16 @@ export default function App() {
                             <option value="" disabled>กรุณาเลือก</option>
                             {VACCINE_NAMES.map(v => <option key={v} value={v}>{v}</option>)}
                           </select>
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="block text-sm font-bold text-gray-700">Lot. number</label>
+                          <input 
+                            type="text"
+                            className="w-full border border-gray-200 rounded-xl p-3 text-base outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent transition-all bg-white" 
+                            placeholder="ระบุ Lot number"
+                            value={vaccineFormData.lotNumber} 
+                            onChange={e => setVaccineFormData({...vaccineFormData, lotNumber: e.target.value})}
+                          />
                         </div>
                       </div>
                     )}

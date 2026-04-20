@@ -29,6 +29,7 @@
             "treatmentType": { "type": "string", "description": "Type of treatment" },
             "injectionMethod": { "type": "string", "description": "Injection method" },
             "vaccineName": { "type": "string", "description": "Name of the vaccine" },
+            "lotNumber": { "type": "string", "description": "Vaccine Lot Number" },
             "note": { "type": "string", "description": "Additional notes" }
           }
         }

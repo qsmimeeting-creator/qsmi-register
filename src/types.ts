@@ -4,6 +4,7 @@ export interface VaccineData {
   treatmentType: string;
   injectionMethod: string;
   vaccineName: string;
+  lotNumber: string;
   note: string;
 }
 
