@@ -355,6 +355,15 @@ export default function App() {
       return;
     }
 
+    if (formData.age < 15 || formData.age > 80) {
+      setErrorModal({ 
+        show: true, 
+        title: 'แจ้งเตือน', 
+        message: 'ขออภัย ระบบเปิดรับลงทะเบียนเฉพาะผู้ที่มีอายุระหว่าง 15 - 80 ปีเท่านั้น' 
+      });
+      return;
+    }
+
     if (!['อาจารย์/เจ้าหน้าที่', 'บุคคลทั่วไป'].includes(formData.yearLevel) && !formData.studentId) {
       setErrorModal({ show: true, title: 'แจ้งเตือน', message: 'กรุณากรอกรหัสนักศึกษา' });
       return;
@@ -387,6 +396,15 @@ export default function App() {
     
     if (!editFormData.gender) {
       setErrorModal({ show: true, title: 'แจ้งเตือน', message: 'กรุณาระบุเพศ' });
+      return;
+    }
+
+    if (editFormData.age !== undefined && (editFormData.age < 15 || editFormData.age > 80)) {
+      setErrorModal({ 
+        show: true, 
+        title: 'แจ้งเตือน', 
+        message: 'ขออภัย อายุต้องอยู่ระหว่าง 15 - 80 ปีเท่านั้น' 
+      });
       return;
     }
 
