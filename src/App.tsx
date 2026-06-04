@@ -25,6 +25,7 @@ import {
   Syringe,
   User 
 } from 'lucide-react';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Registration, VaccineData } from './types';
 import { firebaseService } from './services/firebaseService';
@@ -128,7 +129,32 @@ const pickerStyles: StylesConfig<any, false> = {
 };
 
 export default function App() {
-  const [view, setView] = useState<'check-id' | 'register-form' | 'success' | 'admin-login' | 'admin-dashboard'>('check-id');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [view, setViewState] = useState<'check-id' | 'register-form' | 'success' | 'admin-login' | 'admin-dashboard'>('check-id');
+
+  const setView = (newView: typeof view) => {
+    setViewState(newView);
+  };
+
+  useEffect(() => {
+    // Route logic
+    if (location.pathname === '/admin') {
+      const savedSession = localStorage.getItem('qsmi_admin_session');
+      if (savedSession === 'true') {
+        setViewState('admin-dashboard');
+      } else {
+        setViewState('admin-login');
+      }
+    } else {
+      // For paths other than /admin, normal flow applies.
+      // Do not override if they are in 'register-form' or 'success'
+      if (!['check-id', 'register-form', 'success'].includes(view)) {
+         setViewState('check-id');
+      }
+    }
+  }, [location.pathname]);
+
   const [bookings, setBookings] = useState<Registration[]>([]);
   const [currentBooking, setCurrentBooking] = useState<Registration | null>(null);
   const [loading, setLoading] = useState(true);
@@ -169,12 +195,7 @@ export default function App() {
 
   useEffect(() => {
     firebaseService.testConnection();
-    const savedSession = localStorage.getItem('qsmi_admin_session');
-    if (savedSession === 'true') {
-      setView('admin-dashboard');
-    } else {
-      setLoading(false);
-    }
+    setLoading(false);
   }, []);
 
   const loadAdminData = async (reset = false, search = '') => {
@@ -569,13 +590,7 @@ export default function App() {
               {loading ? 'กำลังโหลดข้อมูล...' : <>ตรวจสอบ / ลงทะเบียน <ArrowRight className="w-6 h-6" /></>}
             </button>
             <div className="text-center pt-4">
-              <button 
-                type="button" 
-                onClick={() => { setView('admin-login'); setAdminPinInput(''); }} 
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-gray-400 hover:text-[#C8102E] hover:bg-[#C8102E]/5 transition-all uppercase tracking-widest"
-              >
-                <Lock className="w-3 h-3" /> Staff Access
-              </button>
+              {/* Staff Access Button removed to separate component/route */}
             </div>
           </form>
         </div>
@@ -1461,11 +1476,22 @@ export default function App() {
       )}
       
       <AnimatePresence mode="wait">
-        {view === 'check-id' && renderCheckID()}
-        {view === 'register-form' && renderRegisterForm()}
-        {view === 'success' && renderSuccess()}
-        {view === 'admin-login' && renderAdminLogin()}
-        {view === 'admin-dashboard' && renderAdminDashboard()}
+        <Routes>
+          <Route path="/admin" element={
+            <>
+              {view === 'admin-login' && renderAdminLogin()}
+              {view === 'admin-dashboard' && renderAdminDashboard()}
+            </>
+          } />
+          <Route path="/" element={
+            <>
+              {view === 'check-id' && renderCheckID()}
+              {view === 'register-form' && renderRegisterForm()}
+              {view === 'success' && renderSuccess()}
+            </>
+          } />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </AnimatePresence>
 
       {/* Error Modal */}
