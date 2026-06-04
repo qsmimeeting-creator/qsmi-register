@@ -953,7 +953,7 @@ export default function App() {
           
           <button 
             type="button" 
-            onClick={() => { setView('check-id'); setAdminPinInput(''); }} 
+            onClick={() => { navigate('/'); setAdminPinInput(''); }} 
             className="w-full py-3 text-white/40 hover:text-white font-bold text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
           >
             <ChevronLeft className="w-4 h-4" /> Back to Registration
@@ -972,7 +972,7 @@ export default function App() {
           <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <h1 className="text-xl md:text-2xl font-bold text-gray-800">รายชื่อผู้ลงทะเบียน ({bookings.length})</h1>
             <button 
-              onClick={() => { localStorage.removeItem('qsmi_admin_session'); setView('check-id'); setAdminPinInput(''); }} 
+              onClick={() => { localStorage.removeItem('qsmi_admin_session'); navigate('/'); setAdminPinInput(''); }} 
               className="w-full md:w-auto px-4 py-2 bg-gray-200 rounded-lg text-sm font-bold"
             >
               Logout
